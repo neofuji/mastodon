@@ -42,6 +42,8 @@ class StatusContent extends React.PureComponent {
         link.setAttribute('title', link.href);
       }
     }
+
+    PR.prettyPrint(null, node);
   }
 
   onMentionClick (mention, e) {
