@@ -12,7 +12,7 @@ class Formatter
   def format(status)
     return reformat(status.content) unless status.local?
 
-    html = split_codes(status.text).each_slice.map do |_, text, lang, code|
+    html = split_codes(status.text).each_slice(4).map do |_, text, lang, code|
       html = text
       unless html.empty?
         html = encode_and_link_urls(html)
