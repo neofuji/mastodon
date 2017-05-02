@@ -12,12 +12,20 @@ class Formatter
   def format(status)
     return reformat(status.content) unless status.local?
 
-    html = status.text
-    html = encode_and_link_urls(html)
-    html = simple_format(html, {}, sanitize: false)
-    html = html.delete("\n")
-    html = link_mentions(html, status.mentions)
-    html = link_hashtags(html)
+    html = split_codes(status.text).each_slice.map do |_, text, lang, code|
+      html = text
+      unless html.empty?
+        html = encode_and_link_urls(html)
+        html = simple_format(html, {}, sanitize: false)
+        html = html.delete("\n")
+        html = link_mentions(html, status.mentions)
+        html = link_hashtags(html)
+      end
+      if lang
+        html += "<pre class=\"prettyprint\"><code>#{encode(code)}</code></pre>"
+      end
+      html
+    end.join(nil)
 
     html.html_safe # rubocop:disable Rails/OutputSafety
   end
@@ -117,5 +125,24 @@ class Formatter
 
   def mention_html(match, account)
     "#{match.split('@').first}<span class=\"h-card\"><a href=\"#{TagManager.instance.url_for(account)}\" class=\"u-url mention\">@<span>#{account.username}</span></a></span>"
+  end
+
+  def split_codes(text)
+    array = text.split(/^```([0-9A-Za-z])(?:\n|\Z)/, -1)
+    return array if array.empty?
+    array.unshift(nil)
+    1.upto((array.size - 2) / 4) do |i|
+      array[i * 4 + 1] = "#{array[i * 4]}\n#{array[i * 4 + 1]}" unless array[i * 4].empty?
+      array[i * 4] = nil
+    end
+    if array[-1].empty?
+      array[-3] = "#{array[-3]}```#{array[-2]}" if array.size % 4 == 0
+      array.pop(2)
+    end
+    array.each_with_index {|str, i| str.chop! if i.odd? && str.end_with?("\n") }
+  end
+
+  def remove_codes(text)
+    split_codes(text).select.with_index {|_, i| i % 4 == 1 }.join("\n").strip
   end
 end
