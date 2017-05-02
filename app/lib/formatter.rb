@@ -128,7 +128,7 @@ class Formatter
   end
 
   def split_codes(text)
-    array = text.split(/^```([0-9A-Za-z])(?:\n|\Z)/, -1)
+    array = text.split(/^```([0-9A-Za-z]*)(?:\n|\Z)/, -1)
     return array if array.empty?
     array.unshift(nil)
     1.upto((array.size - 2) / 4) do |i|
