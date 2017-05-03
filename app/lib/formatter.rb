@@ -20,7 +20,7 @@ class Formatter
         html = html.delete("\n")
         html = link_mentions(html, status.mentions)
         html = link_hashtags(html)
-        html += "<br />" if lang
+        html += "<br style=\"display: none;\" />" if lang
       end
       if lang
         html += "<pre class=\"prettyprint\"><code>#{encode(code).gsub("\n", "<br />")}</code></pre>"
