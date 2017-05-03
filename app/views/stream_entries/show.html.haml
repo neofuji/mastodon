@@ -11,6 +11,7 @@
   = render 'stream_entries/og_image', activity: @stream_entry.activity, account: @account
 
   %meta{ property: 'twitter:card', content: 'summary' }/
+  = javascript_include_tag 'prettify_public', integrity: true, crossorigin: 'anonymous'
 
 - if show_landing_strip?
   = render partial: 'shared/landing_strip', locals: { account: @stream_entry.account }
