@@ -20,12 +20,13 @@ class Formatter
         html = html.delete("\n")
         html = link_mentions(html, status.mentions)
         html = link_hashtags(html)
+        html += "<br />" if lang
       end
       if lang
         html += "<pre class=\"prettyprint\"><code>#{encode(code).gsub("\n", "<br />")}</code></pre>"
       end
       html
-    end.join(nil)
+    end.join("<br />")
 
     html.html_safe # rubocop:disable Rails/OutputSafety
   end
