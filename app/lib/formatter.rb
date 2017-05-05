@@ -20,13 +20,12 @@ class Formatter
         html = html.delete("\n")
         html = link_mentions(html, status.mentions)
         html = link_hashtags(html)
-        html += "<br style=\"display: none;\" />" if lang
       end
       if lang
-        html += "<pre class=\"prettyprint\"><code>#{encode(code).gsub("\n", "<br />")}</code></pre>"
+        html += "<p><span style=\"display: none;\">```<br /></span><pre class=\"prettyprint\"><code>#{encode(code).gsub("\n", "<br />")}</code></pre><span style=\"display: none;\"><br />```</span></p>"
       end
       html
-    end.join("<br />")
+    end.join(nil)
 
     html.html_safe # rubocop:disable Rails/OutputSafety
   end
@@ -57,7 +56,7 @@ class Formatter
   end
 
   def split_codes(text)
-    array = text.split(/^```([0-9A-Za-z]*)(?:\n|\Z)/, -1)
+    array = text.split(/^```()(?:\n|\Z)/, -1)
     return array if array.empty?
     array.unshift(nil)
     1.upto((array.size - 2) / 4) do |i|
