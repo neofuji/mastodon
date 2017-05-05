@@ -22,7 +22,7 @@ class Formatter
         html = link_hashtags(html)
       end
       if lang
-        html += "<span class=\"invisible\">```<br /></span><pre class=\"prettyprint\"><code>#{encode(code).gsub("\n", "<br />")}</code></pre><span class=\"invisible\"><br />```<br /></span>"
+        html += "<span style=\"display: none;\"><br />```<br /></span><pre class=\"prettyprint\"><code>#{encode(code).gsub("\n", "<br />")}</code></pre><span style=\"display: none;\"><br />```<br /></span>"
       end
       html
     end.join(nil)
