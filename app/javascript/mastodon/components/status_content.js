@@ -44,6 +44,12 @@ export default class StatusContent extends React.PureComponent {
         link.setAttribute('title', link.href);
       }
     }
+
+    const hwjs = require('../highlight').hljs;
+
+    $('pre code', node).each(function(i, block) {
+      hljs.highlightBlock(block);
+    });
   }
 
   componentDidUpdate () {
