@@ -46,10 +46,7 @@ export default class StatusContent extends React.PureComponent {
     }
 
     const hwjs = require('../highlight').hljs;
-
-    $('pre code', node).each(function(i, block) {
-      hljs.highlightBlock(block);
-    });
+    [].forEach.call(node.querySelectorAll("pre code"), hwjs.highlightBlock);
   }
 
   componentDidUpdate () {
