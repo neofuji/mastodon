@@ -36,6 +36,8 @@ function loaded() {
     const datetime = new Date(content.getAttribute('datetime'));
     content.textContent = relativeFormat.format(datetime);;
   });
+
+  hljs.initHighlighting();
 }
 
 function main() {
