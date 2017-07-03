@@ -24,7 +24,7 @@ class FetchLinkCardService < BaseService
 
   def parse_urls(status)
     if status.local?
-      urls = status.text.match(URL_PATTERN).to_a.map { |uri| Addressable::URI.parse(uri).normalize }
+      urls = Formatter.instance.remove_codes(status.text).match(URL_PATTERN).to_a.map { |uri| Addressable::URI.parse(uri).normalize }
     else
       html  = Nokogiri::HTML(status.text)
       links = html.css('a')
