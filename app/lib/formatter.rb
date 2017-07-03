@@ -56,6 +56,25 @@ class Formatter
     Sanitize.fragment(html, config)
   end
 
+  def split_codes(text)
+    array = text.split(/^```()(?:\n|\Z)/, -1)
+    return array if array.empty?
+    array.unshift(nil)
+    1.upto((array.size - 2) / 4) do |i|
+      array[i * 4 + 1] = "#{array[i * 4]}\n#{array[i * 4 + 1]}" unless array[i * 4].empty?
+      array[i * 4] = nil
+    end
+    if array[-1].empty?
+      array[-3] = "#{array[-3]}```#{array[-2]}" if array.size % 4 == 0
+      array.pop(2)
+    end
+    array.each_with_index {|str, i| str.chop! if i.odd? && str.end_with?("\n") }
+  end
+
+  def remove_codes(text)
+    split_codes(text).select.with_index {|_, i| i % 4 == 1 }.join("\n").strip
+  end
+
   private
 
   def encode(html)
