@@ -26,8 +26,13 @@ class Formatter
 
     html = raw_content
     html = "RT @#{prepend_reblog} #{html}" if prepend_reblog
-    html = encode_and_link_urls(html, linkable_accounts)
-    html = simple_format(html, {}, sanitize: false)
+
+    html = format_codes(html) do |text|
+      html = text
+      html = encode_and_link_urls(html, linkable_accounts)
+      html = simple_format(html, {}, sanitize: false)
+    end
+
     html = html.delete("\n")
 
     html.html_safe # rubocop:disable Rails/OutputSafety
@@ -76,6 +81,18 @@ class Formatter
   end
 
   private
+
+  def format_codes(html)
+    split_codes(html).each_slice(4).map do |_, text, lang, code|
+      html = ""
+      unless text.empty?
+        html += yield text unless text.empty?
+        html += "<br style=\"display: none;\" />" if lang
+      end
+      html += code_html(code, lang) if lang
+      html
+    end.join("<br />")
+  end
 
   def encode(html)
     HTMLEntities.new.encode(html)
@@ -165,5 +182,9 @@ class Formatter
 
   def mention_html(account)
     "<span class=\"h-card\"><a href=\"#{TagManager.instance.url_for(account)}\" class=\"u-url mention\">@<span>#{account.username}</span></a></span>"
+  end
+
+  def code_html(code, lang = nil)
+    "<span style=\"display: none;\">```<br /></span><pre><code>#{encode(code).gsub("\n", "<br />")}</code></pre><span style=\"display: none;\"><br />```</span>"
   end
 end
