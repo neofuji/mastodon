@@ -24,6 +24,11 @@ function main() {
   const emojify = require('../mastodon/emoji').default;
   const { getLocale } = require('../mastodon/locales');
   const { localeData } = getLocale();
+  const VideoContainer = require('../mastodon/containers/video_container').default;
+  const MediaGalleryContainer = require('../mastodon/containers/media_gallery_container').default;
+  const CardContainer = require('../mastodon/containers/card_container').default;
+  const React = require('react');
+  const ReactDOM = require('react-dom');
 
   localeData.forEach(IntlRelativeFormat.__addLocaleData);
 
@@ -66,23 +71,22 @@ function main() {
       });
     });
 
+    [].forEach.call(document.querySelectorAll('[data-component="Video"]'), (content) => {
+      const props = JSON.parse(content.getAttribute('data-props'));
+      ReactDOM.render(<VideoContainer locale={locale} {...props} />, content);
+    });
+
+    [].forEach.call(document.querySelectorAll('[data-component="MediaGallery"]'), (content) => {
+      const props = JSON.parse(content.getAttribute('data-props'));
+      ReactDOM.render(<MediaGalleryContainer locale={locale} {...props} />, content);
+    });
+
+    [].forEach.call(document.querySelectorAll('[data-component="Card"]'), (content) => {
+      const props = JSON.parse(content.getAttribute('data-props'));
+      ReactDOM.render(<CardContainer locale={locale} {...props} />, content);
+    });
+
     hljs.initHighlighting();
-  });
-
-  delegate(document, '.video-player video', 'click', ({ target }) => {
-    if (target.paused) {
-      target.play();
-    } else {
-      target.pause();
-    }
-  });
-
-  delegate(document, '.activity-stream .media-spoiler-wrapper .media-spoiler', 'click', function() {
-    this.parentNode.classList.add('media-spoiler-wrapper__visible');
-  });
-
-  delegate(document, '.activity-stream .media-spoiler-wrapper .spoiler-button', 'click', function() {
-    this.parentNode.classList.remove('media-spoiler-wrapper__visible');
   });
 
   delegate(document, '.webapp-btn', 'click', ({ target, button }) => {
@@ -126,7 +130,7 @@ function main() {
   delegate(document, '#account_avatar', 'change', ({ target }) => {
     const avatar = document.querySelector('.card.compact .avatar img');
     const [file] = target.files || [];
-    const url = URL.createObjectURL(file);
+    const url = file ? URL.createObjectURL(file) : avatar.dataset.originalSrc;
 
     avatar.src = url;
   });
@@ -134,7 +138,7 @@ function main() {
   delegate(document, '#account_header', 'change', ({ target }) => {
     const header = document.querySelector('.card.compact');
     const [file] = target.files || [];
-    const url = URL.createObjectURL(file);
+    const url = file ? URL.createObjectURL(file) : header.dataset.originalSrc;
 
     header.style.backgroundImage = `url(${url})`;
   });
